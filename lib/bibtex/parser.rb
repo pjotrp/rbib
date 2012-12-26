@@ -7,6 +7,7 @@ module Bibtex
 
   class Parser
     def self.parse(filename)
+      $stderr.print "Parsing #{filename}\n"
       parse_string File.read(filename)
     end
 
@@ -15,7 +16,9 @@ module Bibtex
 
       b = Bibliography.new
       while @lexer.more_tokens?
-        b << parse_entry
+        e = parse_entry
+        # $stderr.print e   <- use for debugging bibtex files
+        b << e
       end
       return b
     end
