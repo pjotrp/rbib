@@ -17,7 +17,7 @@ module Bibtex
       b = Bibliography.new
       while @lexer.more_tokens?
         e = parse_entry
-        # $stderr.print e   <- use for debugging bibtex files
+        $stderr.print e if $debug 
         b << e
       end
       return b
