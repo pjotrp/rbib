@@ -31,6 +31,7 @@ module Bibtex
       expect :lbrace, '{'
       key = expect :id
 
+      $stderr.print(type,':',key,"\n")
       e = Entry.new(type, key)
       while @lexer.peek_token != :rbrace
         expect :comma, ','
