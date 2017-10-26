@@ -1,14 +1,14 @@
 require 'bibtex/entry'
 
 module Bibtex
-  
-  class Bibliography    
+
+  class Bibliography
     attr_reader :entries
 
     def initialize
       @entries = {}
     end
-    
+
     def <<(e)
       if e.kind_of? Entry then
         $stderr.print "Warning: Bibtex duplicate entry <#{e.key}>\n" if @entries[e.key]
@@ -27,7 +27,8 @@ module Bibtex
     def map
       r = Bibliography.new
       @entries.each do |k, e|
-        r << yield(e)
+        rec = yield(e)
+        r << rec if rec
       end
       return r
     end
@@ -42,5 +43,5 @@ module Bibtex
       @entries.keys.sort.collect { |k| @entries[k].to_s }.join
     end
   end
-  
+
 end

@@ -99,12 +99,12 @@ module Bibtex
 
     def self.expect(token, pretty = nil)
       pretty ||= token.to_s
-      begin
-        got = @lexer.next_token!
-      end until (got != :comment)
+      # begin
+      got = @lexer.next_token!
+      # end until (got != :comment)
 
       unless got == token then
-        raise "#{@lexer.src_pos}: Expected '#{pretty}' but found token '#{got}' (text='#{@lexer.lval}')"
+        raise "#{@lexer.src_pos}: Expected token '#{pretty}' but found token '#{got}' (text='#{@lexer.lval}')"
       else
         @lexer.lval
       end
@@ -118,7 +118,7 @@ module Bibtex
       rules.match(/\=/,:equals)
       rules.match(/\,/,:comma)
       rules.match(/[\w\-:&]+/,:id)
-      rules.match(/^%+.*\n/,:comment)
+      # rules.match(/^%+.*\n/,:comment)
       rules.match(/.+?/,:cdata)
     end
   end
