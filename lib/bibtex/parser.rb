@@ -17,7 +17,7 @@ module Bibtex
       b = Bibliography.new
       while @lexer.more_tokens?
         e = parse_entry
-        $stderr.print e if $debug 
+        $stderr.print e if $debug
         b << e
       end
       return b
@@ -35,7 +35,9 @@ module Bibtex
       e = Entry.new(type, key)
       while @lexer.peek_token != :rbrace
         expect :comma, ','
-        e.add_field parse_field
+        unless @lexer.peek_token == :rbrace
+          e.add_field parse_field
+        end
       end
 
       expect :rbrace, '}'
@@ -76,7 +78,7 @@ module Bibtex
           @lexer.ignore_whitespace = true
           return str
         end
-        
+
         case @lexer.next_token!
         when :rbrace, close
           brace_count -= 1
@@ -97,7 +99,10 @@ module Bibtex
 
     def self.expect(token, pretty = nil)
       pretty ||= token.to_s
-      got = @lexer.next_token!
+      begin
+        got = @lexer.next_token!
+      end until (got != :comment)
+
       unless got == token then
         raise "#{@lexer.src_pos}: Expected '#{pretty}' but found token '#{got}' (text='#{@lexer.lval}')"
       else
@@ -113,8 +118,9 @@ module Bibtex
       rules.match(/\=/,:equals)
       rules.match(/\,/,:comma)
       rules.match(/[\w\-:&]+/,:id)
+      rules.match(/^%+.*\n/,:comment)
       rules.match(/.+?/,:cdata)
     end
   end
-  
+
 end
