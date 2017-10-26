@@ -3,7 +3,7 @@ require 'strscan'
 module Bibtex
   class SourcePos
     attr_reader :line, :column, :file
-    
+
     def initialize(line, column, file)
       @line = line
       @column = column
@@ -39,7 +39,7 @@ module Bibtex
 
   class LexerError < RuntimeError
     attr_reader :src_pos
-    
+
     def initialize(mess, src_pos)
       super(mess)
       @src_pos = src_pos
@@ -49,7 +49,7 @@ module Bibtex
   class Lexer
     attr_reader :lval, :ignore_whitespace
     attr_accessor :ignore_newlines, :file_name
-    
+
     def initialize(ignore_whitespace = false)
       @scanner = StringScanner.new('')
       @rules = RuleSet.new
@@ -65,7 +65,7 @@ module Bibtex
       @ignore_whitespace = b
       @ignore_newlines = b
     end
-    
+
     def feed(str)
       @scanner = StringScanner.new(str)
       @cols_prev = 0
@@ -74,7 +74,7 @@ module Bibtex
     def src_pos
       SourcePos.new(@lineno, @scanner.pos - @cols_prev, @file_name)
     end
-    
+
     def next_token!
       if @scanner.check(/^\s*\n/) then
         @lineno += 1
@@ -111,12 +111,18 @@ module Bibtex
     private
 
     def skip_whitespace
-      if @ignore_newlines and @ignore_whitespace then
-        @scanner.skip(/\s+/)
-      elsif @ignore_whitespace then
-        @scanner.skip(/[ \t\r]+/)
-      elsif @ignore_newlines  then
-        @scanner.skip(/[\r\n]+/)
+      begin
+        if @ignore_newlines and @ignore_whitespace then
+          @scanner.skip(/\s+/)
+        elsif @ignore_whitespace then
+          @scanner.skip(/[ \t\r]+/)
+        elsif @ignore_newlines  then
+          @scanner.skip(/[\r\n]+/)
+        end
+      rescue ArgumentError => msg
+        $stderr.print msg
+        $stderr.print " ERROR: encoding error in #{src_pos}"
+        exit 1
       end
     end
   end

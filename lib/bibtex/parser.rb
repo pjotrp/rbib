@@ -8,7 +8,8 @@ module Bibtex
   class Parser
     def self.parse(filename)
       $stderr.print "Parsing #{filename}\n"
-      parse_string File.read(filename)
+      # File.open(fn,"r:iso-8859-1:utf-8",&:read).each_line do | s |
+      parse_string File.read(filename, :encoding => "UTF-8").scrub("*")
     end
 
     def self.parse_string(data)
